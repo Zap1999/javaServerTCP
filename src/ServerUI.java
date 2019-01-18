@@ -32,12 +32,7 @@ public class ServerUI {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 socketServer server1 = new socketServer();
-                try {
                     server1.run(ui);
-                }
-                catch(IOException er){
-                    System.err.println("Error: " + er.getMessage());
-                }
             }
         });
     }
