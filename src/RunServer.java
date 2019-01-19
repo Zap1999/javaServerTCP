@@ -16,22 +16,34 @@ public class RunServer implements Runnable {
             ServerSocket listener = new ServerSocket(9090);
             while (true) {
                 Socket socket = listener.accept();
-                    ui.getTextArea().append("Client connected \nOn port: " + socket.getPort()
+                    ui.getTextArea().append("\n\nClient connected \nOn port: " + socket.getPort()
                             + "\nWith address: "
                             + socket.getInetAddress()
                             + "\n");
-                    BufferedReader input =
-                            new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    ui.getTextArea().append("\n\nMessage received!\n Message: "
-                            + input.readLine());
-                    if (input.readLine() == "@exit")
-                        break;
 
+                // Waiting messages
+                new Thread(() -> {
+                    while (true) {
+                        try {
+                            BufferedReader input =
+                                    new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                            String msg = input.readLine();
+                            if (msg == null) {
+                                ui.getTextArea().append("\n\nClient disconnected;(((((((\n");
+                                Thread.currentThread().interrupt();
+                                return;
+                            }
+                            ui.getTextArea().append("\n\nMessage received!\n Message: "
+                                    + msg);
+                        }catch(IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
             }
         }catch(IOException e){
             e.printStackTrace();
         }
 
     }
-
 }
